@@ -1,23 +1,106 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Board from "./components/Board";
+import Keyboard from "./components/Keyboard";
+import { useState, createContext, useEffect } from "react";
+import { boardDefault, generateWordSet } from "./Words";
+import { generateRandomWord } from "./WordBank";
+import GameOver from "./components/GameOver";
+
+export const AppContext = createContext();
 
 function App() {
+  const [board, setBoard] = useState(boardDefault);
+  const [currAttempt, setCurrAttempt] = useState({ attempt: 0, letterPos: 0 });
+  const [wordSet, setWordSet] = useState(new Set());
+  const [disabledLetters, setDisabledLetters] = useState([]);
+  const [correctWord, setCorrectWord] = useState("");
+  const [gameOver, setGameOver] = useState({
+    gameOver: false,
+    guessedWord: false,
+  });
+
+  useEffect(() => {
+    const wordSet = generateWordSet();
+    const correctWord = generateRandomWord();
+    setCorrectWord(correctWord);
+    setWordSet(wordSet);
+  }, []);
+
+  console.log(correctWord);
+  
+  const onSelectLetter = (keyVal) => {
+    if (currAttempt.letterPos > 4) return;
+    const newBoard = [...board];
+    newBoard[currAttempt.attempt][currAttempt.letterPos] = keyVal;
+    setBoard(newBoard);
+    setCurrAttempt({
+      attempt: currAttempt.attempt,
+      letterPos: currAttempt.letterPos + 1,
+    });
+  };
+
+  const onDeleteLetter = () => {
+    if (currAttempt.letterPos === 0) return;
+    const newBoard = [...board];
+    newBoard[currAttempt.attempt][currAttempt.letterPos - 1] = "";
+    setBoard(newBoard);
+    setCurrAttempt({
+      attempt: currAttempt.attempt,
+      letterPos: currAttempt.letterPos - 1,
+    });
+  };
+
+  const onEnterLetter = () => {
+    if (currAttempt.letterPos !== 5) return;
+
+    let currWord = "";
+    for (let i = 0; i < 5; i++) {
+      currWord += board[currAttempt.attempt][i];
+    }
+
+    if (wordSet.has(currWord.toLowerCase())) {
+      setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0 });
+    } else {
+      alert("Word not found");
+    }
+
+    if (currWord.toLowerCase() === correctWord.toLowerCase()) {
+      setGameOver({ gameOver: true, guessedWord: true });
+      return;
+    }
+
+    if (currAttempt.attempt === 5) {
+      setGameOver({ gameOver: true, guessedWord: false });
+      return;
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <nav>
+        <h1>Weirdo</h1>
+      </nav>
+      <AppContext.Provider
+        value={{
+          board,
+          setBoard,
+          currAttempt,
+          setCurrAttempt,
+          onDeleteLetter,
+          onSelectLetter,
+          onEnterLetter,
+          correctWord,
+          setDisabledLetters,
+          disabledLetters,
+          gameOver,
+          setGameOver,
+        }}
+      >
+        <div className="game">
+          <Board />
+          {gameOver.gameOver ? <GameOver /> : <Keyboard />}
+        </div>
+      </AppContext.Provider>
     </div>
   );
 }
