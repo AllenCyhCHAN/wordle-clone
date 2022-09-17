@@ -1,23 +1,35 @@
 import "./App.css";
+
+import { useState, createContext, useEffect } from "react";
+
 import Board from "./components/Board";
 import Keyboard from "./components/Keyboard";
-import { useState, createContext, useEffect } from "react";
-import { boardDefault, generateWordSet } from "./Words";
-import { generateRandomWord } from "./WordBank";
 import GameOver from "./components/GameOver";
+import { boardDefault, generateWordSet } from "./components/Words";
+import { generateRandomWord } from "./components/WordBank";
 
-export const AppContext = createContext();
+export const AppContext = createContext(null);
 
 function App() {
   const [board, setBoard] = useState(boardDefault);
   const [currAttempt, setCurrAttempt] = useState({ attempt: 0, letterPos: 0 });
   const [wordSet, setWordSet] = useState(new Set());
   const [disabledLetters, setDisabledLetters] = useState([]);
+  const [correctWords, setCorrectWords] = useState([]);
+  const [almostWords, setAlmostWords] = useState([]);
+  const [applicableWord, setApplicableWord] = useState(true);
   const [correctWord, setCorrectWord] = useState("");
   const [gameOver, setGameOver] = useState({
     gameOver: false,
     guessedWord: false,
   });
+  const [theme, setTheme] = useState(true);
+
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      return !prev;
+    });
+  };
 
   useEffect(() => {
     const wordSet = generateWordSet();
@@ -27,7 +39,7 @@ function App() {
   }, []);
 
   console.log(correctWord);
-  
+
   const onSelectLetter = (keyVal) => {
     if (currAttempt.letterPos > 4) return;
     const newBoard = [...board];
@@ -45,7 +57,7 @@ function App() {
     newBoard[currAttempt.attempt][currAttempt.letterPos - 1] = "";
     setBoard(newBoard);
     setCurrAttempt({
-      attempt: currAttempt.attempt,
+      ...currAttempt,
       letterPos: currAttempt.letterPos - 1,
     });
   };
@@ -60,25 +72,36 @@ function App() {
 
     if (wordSet.has(currWord.toLowerCase())) {
       setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0 });
+      setApplicableWord(true);
     } else {
-      alert("Word not found");
+      setApplicableWord(false);
     }
 
     if (currWord.toLowerCase() === correctWord.toLowerCase()) {
+      setApplicableWord(true);
       setGameOver({ gameOver: true, guessedWord: true });
       return;
     }
 
     if (currAttempt.attempt === 5) {
+      setApplicableWord(true);
       setGameOver({ gameOver: true, guessedWord: false });
       return;
     }
   };
 
   return (
-    <div className="App">
+    <div className={theme ? "App-dark" : "App-light"}>
       <nav>
-        <h1>Weirdo</h1>
+        <h1 className={theme ? "title title-dark" : "title title-light"}>
+          Weirdo
+        </h1>
+        <button
+          className={theme ? "dark-btn color-btn" : "light-btn color-btn"}
+          onClick={toggleTheme}
+        >
+          {!theme ? "dark" : "light"}
+        </button>
       </nav>
       <AppContext.Provider
         value={{
@@ -94,10 +117,16 @@ function App() {
           disabledLetters,
           gameOver,
           setGameOver,
+          theme,
+          almostWords,
+          setAlmostWords,
+          correctWords,
+          setCorrectWords,
         }}
       >
         <div className="game">
           <Board />
+          {applicableWord ? <h1 /> : <h1>Invalid Word</h1>}
           {gameOver.gameOver ? <GameOver /> : <Keyboard />}
         </div>
       </AppContext.Provider>

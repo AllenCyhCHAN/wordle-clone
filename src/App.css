@@ -1,9 +1,23 @@
-.App {
+#root {
+  --global-dark-color: #121212;
+  --global-light-color: white;
+  --global-grey-color: rgb(211, 210, 210);
+}
+
+.App-dark {
   text-align: center;
-  background-color: #121212;
   width: 100vw;
   height: 100vh;
   color: white;
+  background-color: var(--global-dark-color);
+}
+
+.App-light {
+  text-align: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--global-grey-color);
+  color: var(--global-light-color);
 }
 
 body {
@@ -14,22 +28,68 @@ body {
 nav {
   height: 80px;
   width: 100%;
-  margin: 0;
+  margin: 0px;
   border-bottom: 1px solid grey;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-nav h1 {
+.title {
   margin: 0;
   font-family: Helvetica, Arial, sans-serif;
-  color: white;
   font-size: 45px;
+  margin-left: 20px;
+}
+
+.title-light {
+  color: var(--global-dark-color);
+}
+
+.color-btn {
+  margin-right: 40px;
+
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+.dark-btn {
+  background-color: var(--global-light-color);
+  color: var(--global-dark-color);
+}
+
+.dark-btn:hover {
+  background-color: var(--global-dark-color);
+  color: var(--global-light-color);
+  border-style: solid;
+  border-color: --global-light-color;
+}
+
+.light-btn {
+  background-color: var(--global-dark-color); /* Green */
+  color: var(--global-light-color);
+}
+
+.light-btn:hover {
+  background-color: var(--global-light-color);
+  color: var(--global-dark-color);
+  border-style: solid;
+  border-color: --global-dark-color;
 }
 
 .game {
   width: 100vw;
-  height: calc(100vh - 170px);
+  height: calc(100vh - 150px);
   display: flex;
   align-items: center;
   padding-top: 50px;
@@ -37,9 +97,9 @@ nav h1 {
 }
 
 .board {
-  width: 450px;
-  height: 550px;
-  border: 1px solid black;
+  width: 500px;
+  height: 600px;
+  /* border: 1px solid black; */
   display: flex;
   flex-direction: column;
 }
@@ -60,7 +120,6 @@ nav h1 {
   place-items: center;
   font-size: 30px;
   font-weight: bolder;
-  color: white;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -77,9 +136,9 @@ nav h1 {
 }
 
 .keyboard {
-  width: 700px;
+  width: 600px;
   height: 300px;
-  margin-top: 60px;
+  margin-top: 20px;
   font-weight: bolder;
 }
 
@@ -88,7 +147,7 @@ nav h1 {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin: 8px;
+  margin: 6px;
 }
 
 .key {
@@ -110,5 +169,5 @@ nav h1 {
 }
 #disabled {
   background-color: #3a393c;
-  opacity: 0.4;
+  opacity: 0.25;
 }
