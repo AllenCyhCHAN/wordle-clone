@@ -38,7 +38,6 @@ function App() {
     setWordSet(wordSet);
   }, []);
 
-  console.log(correctWord);
 
   const onSelectLetter = (keyVal) => {
     if (currAttempt.letterPos > 4) return;
